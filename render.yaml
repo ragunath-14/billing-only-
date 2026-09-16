@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: billing-admin
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: cd backend-admin && npm ci && cd ../admin && npm ci && npm run build
+    startCommand: cd backend-admin && npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # MongoDB connection string (Atlas). Set manually in the Render dashboard —
+      # never committed here.
+      - key: MONGO_URI
+        sync: false
+      # Signs admin session JWTs. Render generates a random value on first deploy.
+      - key: JWT_SECRET
+        generateValue: true
+      # Single shop-owner login used on /login. Set manually in the dashboard.
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      # Optional: comma-separated extra origins allowed to call this API
+      # cross-origin. Leave unset for the default single-service setup where
+      # the frontend is served from this same Render service.
+      - key: CORS_ORIGIN
+        sync: false
