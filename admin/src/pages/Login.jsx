@@ -4,9 +4,11 @@ import axios from 'axios';
 import { Lock, User, LogIn, Sparkles, ArrowLeft, AlertCircle } from 'lucide-react';
 import { API_URLS } from '../api/config';
 import { setToken } from '../utils/auth';
+import { useSettings } from '../context/SettingsContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { refreshSettings } = useSettings();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [creds, setCreds] = useState({ username: '', password: '' });
@@ -18,6 +20,9 @@ const Login = () => {
     try {
       const res = await axios.post(`${API_URLS.BASE}/auth/login`, creds);
       setToken(res.data.token);
+      // The one-time app-mount settings fetch runs before login and now requires
+      // auth, so it fails silently — refetch now that we have a token.
+      refreshSettings();
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed. Please try again.');
@@ -48,10 +53,12 @@ const Login = () => {
             <label className="form-label small fw-bold">Username</label>
             <div className="input-group">
               <span className="input-group-text bg-light border-0"><User size={18} className="text-muted" /></span>
-              <input 
-                type="text" 
-                className="form-control bg-light border-0" 
-                placeholder="Enter username" 
+              <input
+                type="text"
+                name="admin-username"
+                autoComplete="username"
+                className="form-control bg-light border-0"
+                placeholder="Enter username"
                 required
                 value={creds.username}
                 onChange={e => setCreds({ ...creds, username: e.target.value })}
@@ -62,10 +69,12 @@ const Login = () => {
             <label className="form-label small fw-bold">Password</label>
             <div className="input-group">
               <span className="input-group-text bg-light border-0"><Lock size={18} className="text-muted" /></span>
-              <input 
-                type="password" 
-                className="form-control bg-light border-0" 
-                placeholder="••••••••" 
+              <input
+                type="password"
+                name="admin-password"
+                autoComplete="current-password"
+                className="form-control bg-light border-0"
+                placeholder="••••••••"
                 required
                 value={creds.password}
                 onChange={e => setCreds({ ...creds, password: e.target.value })}

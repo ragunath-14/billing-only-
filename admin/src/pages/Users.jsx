@@ -18,10 +18,6 @@ const Users = () => {
   const [formData, setFormData] = useState(emptyForm);
   const [message, setMessage] = useState(null);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const fetchUsers = async () => {
     try {
       const res = await axios.get(API_URLS.USERS);
@@ -32,6 +28,10 @@ const Users = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const togglePage = (key) => {
     setFormData(f => ({
@@ -73,7 +73,7 @@ const Users = () => {
     try {
       await axios.delete(`${API_URLS.USERS}/${id}`);
       fetchUsers();
-    } catch (err) {
+    } catch {
       alert('Delete failed');
     }
   };
@@ -82,7 +82,7 @@ const Users = () => {
     try {
       await axios.put(`${API_URLS.USERS}/${user._id}`, { active: !user.active });
       fetchUsers();
-    } catch (err) {
+    } catch {
       alert('Update failed');
     }
   };
@@ -205,6 +205,8 @@ const Users = () => {
                   <input
                     required
                     type="text"
+                    name="new-staff-username"
+                    autoComplete="off"
                     className="form-control rounded-3"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
@@ -217,6 +219,8 @@ const Users = () => {
                   </label>
                   <input
                     type="password"
+                    name="new-staff-password"
+                    autoComplete="new-password"
                     className="form-control rounded-3"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}

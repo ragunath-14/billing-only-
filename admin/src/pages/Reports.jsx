@@ -24,12 +24,6 @@ const Reports = () => {
   const [page, setPage] = useState(1);
   const size = 10;
 
-  useEffect(() => {
-    fetchSales();
-  }, []);
-
-  useEffect(() => { setPage(1); }, [searchQuery, fromDate, toDate]);
-
   const fetchSales = async () => {
     try {
       const res = await axios.get(API_URLS.SALES);
@@ -41,13 +35,19 @@ const Reports = () => {
     }
   };
 
+  useEffect(() => {
+    fetchSales();
+  }, []);
+
+  useEffect(() => { setPage(1); }, [searchQuery, fromDate, toDate]);
+
   const handleDeleteSale = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this bill? Stock will be restored and linked online orders will be reset.')) return;
+    if (!window.confirm('Are you sure you want to delete this bill? Stock will be restored.')) return;
     try {
       await axios.delete(`${API_URLS.SALES}/${id}`);
       fetchSales(); // Refresh list
       alert('Bill deleted successfully');
-    } catch (err) {
+    } catch {
       alert('Failed to delete bill');
     }
   };

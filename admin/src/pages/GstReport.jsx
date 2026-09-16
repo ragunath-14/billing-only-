@@ -18,10 +18,6 @@ const GstReport = () => {
   const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchSales();
-  }, []);
-
   const fetchSales = async () => {
     try {
       const res = await axios.get(API_URLS.SALES);
@@ -32,6 +28,10 @@ const GstReport = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchSales();
+  }, []);
 
   const filteredSales = useMemo(() => {
     return sales.filter(s => {

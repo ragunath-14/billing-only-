@@ -5,8 +5,6 @@ const PAGE_KEYS = [
   'billing',
   'products',
   'categories',
-  'orders',
-  'online-billing',
   'pending',
   'customers',
   'settings',

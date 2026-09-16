@@ -10,7 +10,6 @@ export const API_URLS = {
   PRODUCTS:  `${BASE_URL}/products`,
   CUSTOMERS: `${BASE_URL}/customers`,
   SETTINGS:  `${BASE_URL}/settings`,
-  ORDERS:    `${BASE_URL}/orders`,
   PAYMENTS:  `${BASE_URL}/payments`,
   USERS:     `${BASE_URL}/users`,
   BASE:      BASE_URL

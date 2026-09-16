@@ -29,7 +29,7 @@ const CartPanel = ({ cart, registered = [], onAddQty, cust, onCustChange, onRemo
           </div>
         </div>
       <div className="p-3 bg-light bg-opacity-10 flex-grow-1" style={{ minHeight: '300px' }}>
-        <div className="d-flex align-items-center gap-2 mb-3 fw-bold"><ShoppingCart size={18} /> Cart ({cart.length})</div>
+        <div className="d-flex align-items-center gap-2 mb-3 fw-bold"><ShoppingCart size={18} /> Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)})</div>
         <div className="cart-items">{cart.length === 0 ? <div className="text-center py-5">Cart empty</div>
           : cart.map(i => (<div key={i.productId} className="cart-item-row mb-2">
               <div className="flex-grow-1">

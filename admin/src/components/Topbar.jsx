@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Bell, AlertTriangle, Package, X, ChevronRight, Menu } from 'lucide-react';
 import { API_URLS } from '../api/config';
+import { getUserInfo } from '../utils/auth';
 
 const titles = {
   '/':          'Dashboard',
@@ -98,6 +99,8 @@ const Topbar = ({ onMenuClick }) => {
   };
 
   const title = titles[pathname] || 'Sparkle Hub';
+  const user = getUserInfo();
+  const username = user?.username || 'Account';
 
   return (
     <div className="topbar">
@@ -307,10 +310,10 @@ const Topbar = ({ onMenuClick }) => {
           )}
         </div>
 
-        <div className="avatar">A</div>
+        <div className="avatar">{username.charAt(0).toUpperCase()}</div>
         <div className="admin-text" style={{ lineHeight: 1 }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Admin Account</div>
-          <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Shop Owner</div>
+          <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{username}</div>
+          <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{user?.role === 'admin' ? 'Shop Owner' : 'Staff'}</div>
         </div>
       </div>
 

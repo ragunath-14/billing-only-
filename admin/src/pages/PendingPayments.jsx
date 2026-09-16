@@ -12,17 +12,13 @@ const PendingPayments = () => {
   const [tab, setTab] = useState('pending');
   const [q, setQ] = useState('');
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [showPartial, setShowPartial] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [form, setForm] = useState({ customerName: '', customerPhone: '', totalAmount: '' });
   const [page, setPage] = useState(1);
   const size = 10;
-
-  useEffect(() => {
-    fetchPayments();
-  }, []);
 
   const fetchPayments = async () => {
     try {
@@ -34,6 +30,10 @@ const PendingPayments = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPayments();
+  }, []);
 
   useEffect(() => { setPage(1); }, [q, tab]);
 
@@ -52,7 +52,7 @@ const PendingPayments = () => {
       fetchPayments();
       setShowAdd(false); 
       setForm({ customerName: '', customerPhone: '', totalAmount: '' });
-    } catch (err) {
+    } catch {
       alert('Failed to save payment record');
     }
   };
@@ -63,7 +63,7 @@ const PendingPayments = () => {
       fetchPayments();
       setShowPartial(false);
       setSelectedRecord(null);
-    } catch (err) {
+    } catch {
       alert('Failed to record payment');
     }
   };
@@ -73,7 +73,7 @@ const PendingPayments = () => {
     try {
       await axios.delete(`${API_URLS.PAYMENTS}/${id}`);
       fetchPayments();
-    } catch (err) {
+    } catch {
       alert('Delete failed');
     }
   };

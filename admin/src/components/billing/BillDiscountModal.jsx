@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
 
 const BillDiscountModal = ({ show, onClose, currentDisc, onSave }) => {
-  if (!show) return null;
   const [type, setType] = useState(currentDisc?.type || 'percentage');
   const [val, setVal] = useState(currentDisc?.value || 0);
+
+  if (!show) return null;
 
   return (
     <div className="modal show d-block" style={{ background: 'rgba(0,0,0,0.5)', zIndex: 1060 }}>

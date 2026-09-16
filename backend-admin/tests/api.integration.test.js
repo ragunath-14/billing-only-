@@ -123,22 +123,6 @@ test('creating a sale deducts stock, and insufficient stock is rejected', async 
   await req(`/products/${productId}`, 'DELETE');
 });
 
-test('online order create + status update round-trip', async () => {
-  const order = await req('/orders', 'POST', {
-    customer: { name: 'IT Order Customer', phone: '9999999999', address: '1 Test Way' },
-    items: [{ productId: '000000000000000000000000', name: 'IT Item', qty: 1, price: 10, total: 10 }],
-    totalAmount: 10, source: 'Online Store',
-  });
-  assert.equal(order.status, 201);
-
-  const list = await req('/orders');
-  assert.ok(list.body.some(o => o._id === order.body._id));
-
-  const patched = await req(`/orders/${order.body._id}/status`, 'PATCH', { status: 'Delivered' });
-  assert.equal(patched.status, 200);
-  assert.equal(patched.body.status, 'Delivered');
-});
-
 test('customer CRUD round-trip', async () => {
   const mobile = String(Math.floor(6000000000 + Math.random() * 3999999999));
   const created = await req('/customers', 'POST', { name: 'IT Customer', mobile });

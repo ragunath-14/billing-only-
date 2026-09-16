@@ -58,9 +58,13 @@ const ProductFormModal = ({ show, editTarget, form, categories = [], onChange, o
           <form onSubmit={onSave}>
             <div className="modal-body px-4 py-3">
               <div className="row g-3">
-                <div className="col-12">
+                <div className="col-6">
                   <label className="form-label small fw-bold text-muted">Product Name *</label>
                   <input required className="form-control rounded-3" value={form.name} onChange={e => onChange({ ...form, name: e.target.value })} placeholder="e.g. 10cm Sparklers" />
+                </div>
+                <div className="col-6">
+                  <label className="form-label small fw-bold text-muted">Sl. No</label>
+                  <input className="form-control rounded-3" value={form.sku || ''} onChange={e => onChange({ ...form, sku: e.target.value })} placeholder="e.g. 1001" />
                 </div>
                 <div className="col-6">
                   <label className="form-label small fw-bold text-muted">Manufacturer *</label>
@@ -78,8 +82,8 @@ const ProductFormModal = ({ show, editTarget, form, categories = [], onChange, o
                       <PlusCircle size={12} /> New
                     </button>
                   </div>
-                  <select className="form-select rounded-3" value={form.category} onChange={e => onChange({ ...form, category: e.target.value })}>
-                    <option value="Other">Select Category</option>
+                  <select required className="form-select rounded-3" value={form.category || ''} onChange={e => onChange({ ...form, category: e.target.value })}>
+                    <option value="" disabled>Select Category</option>
                     {categories.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
                     <option value="Other">Other</option>
                   </select>

@@ -5,7 +5,7 @@ import { clearToken, hasPageAccess, isAdmin } from '../utils/auth';
 import {
   LayoutDashboard, Package, ShoppingCart,
   Users, Clock, Settings, LogOut, LayoutGrid,
-  ShoppingBag, Printer, BarChart3, FileText,
+  BarChart3, FileText,
   ChevronRight, Sparkles, UserCog
 } from 'lucide-react';
 
@@ -29,13 +29,6 @@ const Sidebar = ({ onLogoClick }) => {
         { to: '/products', page: 'products',  icon: <Package size={17} />,         label: 'Inventory' },
         { to: '/categories', page: 'categories', icon: <LayoutGrid size={17} />,   label: 'Categories' },
         { to: '/pending',  page: 'pending',   icon: <Clock size={17} />,           label: 'Pending Payments' },
-      ]
-    },
-    {
-      title: 'Online Business',
-      items: [
-        { to: '/orders',     page: 'orders',         icon: <ShoppingBag size={17} />, label: 'Online Orders' },
-        { to: '/online-billing', page: 'online-billing', icon: <Printer size={17} />, label: 'Online Billing' },
       ]
     },
     {

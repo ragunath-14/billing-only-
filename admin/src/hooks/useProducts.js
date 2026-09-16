@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import { API_URLS } from '../api/config';
 
-const emptyForm = { name: '', brand: '', sku: '', category: 'Sparklers', buyingPrice: '', sellingPrice: '', stock: '', lowStockThreshold: 5, boxContents: '' };
+const emptyForm = { name: '', brand: '', sku: '', category: '', buyingPrice: '', sellingPrice: '', stock: '', lowStockThreshold: 5, boxContents: '' };
 
 // form.boxContents is a newline-separated string while being edited in the textarea;
 // when opening an existing product for edit it arrives as an array from the API.
@@ -32,7 +32,7 @@ export const useProducts = () => {
   const [targetId, setTargetId] = useState(null);
   const [targetName, setTargetName] = useState('');
 
-  const f = () => { setLoading(true); axios.get(API).then(r => setProducts(r.data)).finally(() => setLoading(false)); };
+  const f = () => { setLoading(true); axios.get(API).then(r => setProducts(r.data)).catch(err => console.error('Failed to refresh products', err)).finally(() => setLoading(false)); };
   useEffect(() => { f(); }, []);
 
   const saveProduct = async (e) => {

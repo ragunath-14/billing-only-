@@ -24,6 +24,10 @@ export const useBilling = () => {
   const [pendingPayment, setPendingPayment] = useState({ enabled: false, paidNow: '' });
 
   const [lastSale, setLastSale] = useState(null);
+  // Non-blocking inline feedback for the checkout flow — replaces window.alert(),
+  // which can read as the page "hanging" in some browsers/automation and gives a
+  // jarring native popup for real cashiers.
+  const [banner, setBanner] = useState(null);
 
   const f = useCallback(() => axios.get(ap).then(r => setProducts(r.data)), [ap]);
   const fCust = useCallback(() => axios.get(ac).then(r => setRegistered(r.data)), [ac]);
@@ -35,7 +39,7 @@ export const useBilling = () => {
     const price = calcFinalPrice(p, settings);
     const ok = cart.find(i => i.productId === p._id);
     if (ok) {
-      if (ok.quantity >= p.stock) return alert('No stock!');
+      if (ok.quantity >= p.stock) return setBanner({ type: 'error', text: 'No stock left for this item.' });
       setCart(prev => prev.map(i => i.productId === p._id ? { ...i, quantity: i.quantity + 1 } : i));
     } else {
       setCart(prev => [...prev, { 
@@ -52,14 +56,15 @@ export const useBilling = () => {
     const n = item.quantity + d;
     if (n <= 0) return setCart(prev => prev.filter(i => i.productId !== id));
     const p = products.find(px => px._id === id);
-    if (p && n > p.stock) return alert('No stock!');
+    if (p && n > p.stock) return setBanner({ type: 'error', text: 'No stock left for this item.' });
     setCart(prev => prev.map(i => i.productId === id ? { ...i, quantity: n } : i));
   }, [cart, products]);
 
-  const checkout = useCallback(async (total, onlineOrderId = null) => {
-    if (!cust.name) return alert('Customer Name is required!');
-    if (!cust.phone || cust.phone.length < 10) return alert('Valid 10-digit Phone Number is required!');
-    if (!cart.length) return alert('Cart is empty! Add products first.');
+  const checkout = useCallback(async () => {
+    if (!cust.name) return setBanner({ type: 'error', text: 'Customer Name is required!' });
+    if (!cust.phone || cust.phone.length < 10) return setBanner({ type: 'error', text: 'Valid 10-digit Phone Number is required!' });
+    if (!cart.length) return setBanner({ type: 'error', text: 'Cart is empty! Add products first.' });
+    setBanner(null);
     setLoading(true);
     try {
       const rate = Number(settings.taxRate || 18);
@@ -69,10 +74,9 @@ export const useBilling = () => {
       const taxable = subt - dValue;
       const gst = billType === 'GST' ? taxable * taxRate : 0;
       const totalAmount = Math.max(0, taxable + gst);
-      const saleData = { 
-        customerName: cust.name, customerPhone: cust.phone, paymentMethod: cust.method, 
-        products: cart, totalAmount, billType, discount, gst, subt, taxRate: rate,
-        onlineOrderId 
+      const saleData = {
+        customerName: cust.name, customerPhone: cust.phone, paymentMethod: cust.method,
+        products: cart, totalAmount, billType, discount, gst, subt, taxRate: rate
       };
       const res = await axios.post(as, saleData);
 
@@ -86,18 +90,19 @@ export const useBilling = () => {
             history: paidNow > 0 ? [{ amount: paidNow, method: cust.method, note: `Billing #${res.data._id}` }] : [],
           });
         } catch (payErr) {
-          alert('Sale was completed, but the pending payment record failed to save: ' + (payErr.response?.data?.error || payErr.message));
+          setBanner({ type: 'error', text: 'Sale was completed, but the pending payment record failed to save: ' + (payErr.response?.data?.error || payErr.message) });
         }
       }
 
       setLastSale(res.data); setCart([]); setCust({ name: '', phone: '', method: 'Cash' }); setDiscount({ type: 'percentage', value: 0 }); setPendingPayment({ enabled: false, paidNow: '' }); f();
     } catch (err) {
-      alert('Sale failed: ' + (err.response?.data?.error || err.message));
+      setBanner({ type: 'error', text: 'Sale failed: ' + (err.response?.data?.error || err.message) });
     } finally { setLoading(false); }
   }, [as, ay, billType, cart, cust, discount, f, pendingPayment, settings.taxRate]);
 
-  const quick = useCallback(async (total) => {
-    if (!cart.length) return alert('Cart is empty!');
+  const quick = useCallback(async () => {
+    if (!cart.length) return setBanner({ type: 'error', text: 'Cart is empty!' });
+    setBanner(null);
     setLoading(true);
     try {
       const rate = Number(settings.taxRate || 18);
@@ -114,7 +119,7 @@ export const useBilling = () => {
       const res = await axios.post(as, saleData);
       setLastSale(res.data); setCart([]); setCust({ name: '', phone: '', method: 'Cash' }); setDiscount({ type: 'percentage', value: 0 }); f();
     } catch (err) {
-      alert('Quick Sale failed: ' + (err.response?.data?.error || err.message));
+      setBanner({ type: 'error', text: 'Quick Sale failed: ' + (err.response?.data?.error || err.message) });
     } finally { setLoading(false); }
   }, [as, billType, cart, cust.method, discount, f, settings.taxRate]);
 
@@ -124,7 +129,7 @@ export const useBilling = () => {
       setRegistered(prev => [...prev, res.data]);
       setCust(prev => ({ ...prev, name: res.data.name, phone: res.data.mobile }));
       return res.data;
-    } catch (err) { alert('Failed to register: ' + (err.response?.data?.error || err.message)); }
+    } catch (err) { setBanner({ type: 'error', text: 'Failed to register: ' + (err.response?.data?.error || err.message) }); }
   }, [ac]);
 
   const deleteSale = useCallback(async (id) => {
@@ -133,37 +138,16 @@ export const useBilling = () => {
       await axios.delete(`${as}/${id}`);
       f(); // Refresh products
       setLastSale(null);
-      alert('Sale deleted and stock restored.');
-    } catch (err) { alert('Failed to delete sale'); }
+      setBanner({ type: 'success', text: 'Sale deleted and stock restored.' });
+    } catch { setBanner({ type: 'error', text: 'Failed to delete sale' }); }
   }, [as, f]);
-
-  const prefill = useCallback((data) => {
-    if (data.customerInfo) {
-      setCust({ 
-        name: data.customerInfo.name || '', 
-        phone: data.customerInfo.phone || '', 
-        method: 'Cash' 
-      });
-    }
-    if (data.prefillItems) {
-      setCart(data.prefillItems.map(item => ({
-        productId: item._id,
-        name: item.name,
-        sellingPrice: item.sellingPrice,
-        quantity: item.qty,
-        buyingPrice: 0,
-        originalPrice: item.sellingPrice,
-        outOfStock: item.outOfStock || false
-      })));
-    }
-  }, []);
 
   const value = useMemo(() => ({
     products, search, setSearch, cart, setCart, registered, cust, setCust,
     loading, discount, setDiscount, billType, setBillType, cat, setCat,
-    pendingPayment, setPendingPayment,
-    add, qty, checkout, quick, regCust, lastSale, setLastSale, f, deleteSale, prefill
-  }), [products, search, cart, registered, cust, loading, discount, billType, cat, pendingPayment, add, qty, checkout, quick, regCust, lastSale, f, deleteSale, prefill]);
+    pendingPayment, setPendingPayment, banner, setBanner,
+    add, qty, checkout, quick, regCust, lastSale, setLastSale, f, deleteSale
+  }), [products, search, cart, registered, cust, loading, discount, billType, cat, pendingPayment, banner, add, qty, checkout, quick, regCust, lastSale, f, deleteSale]);
 
   return value;
 };

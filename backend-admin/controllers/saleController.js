@@ -1,6 +1,5 @@
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
-const Order = require('../models/Order');
 
 // GET all sales (lean for speed)
 exports.getSales = async (req, res) => {
@@ -106,14 +105,9 @@ exports.deleteSale = async (req, res) => {
 
     if (bulkOps.length) await Product.bulkWrite(bulkOps);
 
-    // If this sale was linked to an online order, revert the order status
-    if (sale.onlineOrderId) {
-      await Order.findByIdAndUpdate(sale.onlineOrderId, { status: 'Confirmed' });
-    }
-
     await Sale.findByIdAndDelete(req.params.id);
-    
-    res.json({ message: 'Sale deleted, stock restored, and order reverted' });
+
+    res.json({ message: 'Sale deleted and stock restored' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });

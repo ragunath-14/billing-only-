@@ -1,13 +1,13 @@
 import React from 'react';
+import { PackageSearch } from 'lucide-react';
 import SuggestionInput from '../common/SuggestionInput';
 import Pagination from '../common/Pagination';
 import { calcFinalPrice } from '../../utils/pricing';
 
-const cats = ['All', 'Sparklers', 'Flower Pots', 'Rockets', 'Ground Chakkars', 'Gift Boxes', 'Novelties', 'Other'];
-
-const ProductCatalog = ({ search, onSearch, cat, onCat, filtered, allProducts = [], onAdd, settings }) => {
+const ProductCatalog = ({ search, onSearch, cat, onCat, filtered, allProducts = [], categories = [], onAdd, settings }) => {
   const [page, setPage] = React.useState(1);
   const size = 9;
+  const cats = React.useMemo(() => ['All', ...categories.map(c => c.name)], [categories]);
 
   React.useEffect(() => { setPage(1); }, [search, cat]);
   const paged = filtered.slice((page - 1) * size, page * size);
@@ -24,17 +24,25 @@ const ProductCatalog = ({ search, onSearch, cat, onCat, filtered, allProducts = 
           {cats.map(c => <button key={c} className={`btn btn-xs rounded-pill px-3 py-1 ${cat === c ? 'btn-primary shadow-sm' : 'btn-light border text-muted'}`} style={{ fontSize: '0.75rem' }} onClick={() => onCat(c)}>{c}</button>)}
         </div>
       </div>
-      <div className="row g-2 mb-3">
-        {paged.map(p => {
-          const pr = calcFinalPrice(p, settings);
-          return (<div key={p._id} className="col-6 col-md-4">
-            <div className="pos-item-card border shadow-sm transition-all" onClick={() => onAdd(p)}>
-              <div className="pos-item-header d-flex justify-content-between extra-small"><span className="text-muted">{p.brand}</span><span className={p.stock < 5 ? 'text-danger fw-bold' : 'text-success'}>S:{p.stock}</span></div>
-              <div className="pos-item-name fw-bold" style={{ fontSize: '0.85rem' }}>{p.name}</div>
-              <div className="pos-item-price text-primary fw-bold" style={{ fontSize: '0.9rem' }}>₹{pr.toLocaleString('en-IN')}</div>
-            </div></div>);})}
-      </div>
-      <Pagination total={filtered.length} size={size} current={page} onChange={setPage} />
+      {filtered.length === 0 ? (
+        <div className="py-5 text-center text-muted">
+          <PackageSearch size={40} className="mb-2 opacity-25" /><br />No products found
+        </div>
+      ) : (
+        <>
+          <div className="row g-2 mb-3">
+            {paged.map(p => {
+              const pr = calcFinalPrice(p, settings);
+              return (<div key={p._id} className="col-6 col-md-4">
+                <div className="pos-item-card border shadow-sm transition-all" onClick={() => onAdd(p)}>
+                  <div className="pos-item-header d-flex justify-content-between extra-small"><span className="text-muted">{p.brand}</span><span className={p.stock < 5 ? 'text-danger fw-bold' : 'text-success'}>S:{p.stock}</span></div>
+                  <div className="pos-item-name fw-bold" style={{ fontSize: '0.85rem' }}>{p.name}</div>
+                  <div className="pos-item-price text-primary fw-bold" style={{ fontSize: '0.9rem' }}>₹{pr.toLocaleString('en-IN')}</div>
+                </div></div>);})}
+          </div>
+          <Pagination total={filtered.length} size={size} current={page} onChange={setPage} />
+        </>
+      )}
     </div>
   );
 };

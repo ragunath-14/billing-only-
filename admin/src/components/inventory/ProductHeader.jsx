@@ -10,7 +10,7 @@ const ProductHeader = ({ search, onSearch, products = [], onAdd, onBulk }) => (
       </div>
       <div className="flex-grow-1" style={{ maxWidth: '400px' }}>
         <SuggestionInput value={search} onChange={onSearch} onSelect={onSearch}
-          placeholder="Filter stock by name..." options={products.map(p => ({ label: p.name, subText: p.brand, data: p.name }))} />
+          placeholder="Filter by name, brand, or Sl. No..." options={products.map(p => ({ label: p.name, subText: p.sku ? `Sl. No: ${p.sku}` : p.brand, data: p.name }))} />
       </div>
     </div>
     <div className="d-flex gap-2">

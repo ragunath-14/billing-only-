@@ -10,10 +10,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const cache = useRef({ data: null, time: 0 });
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
   const fetchStats = () => {
     const now = Date.now();
     // Cache management
@@ -28,13 +24,17 @@ const Dashboard = () => {
     }).finally(() => setLoading(false));
   };
 
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
   const deleteSale = async (id) => {
     try {
       await axios.delete(`${API_URLS.SALES}/${id}`);
       // Refresh after deletion
       cache.current = { data: null, time: 0 };
       fetchStats();
-    } catch (err) { alert('Error deleting sale'); }
+    } catch { alert('Error deleting sale'); }
   };
 
   if (loading) return (

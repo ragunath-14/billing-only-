@@ -16,8 +16,6 @@ const PendingPayments = lazy(() => import('./pages/PendingPayments'));
 const Customers       = lazy(() => import('./pages/Customers'));
 const Settings        = lazy(() => import('./pages/Settings'));
 const Categories      = lazy(() => import('./pages/Categories'));
-const OnlineOrders    = lazy(() => import('./pages/OnlineOrders'));
-const OnlineBilling   = lazy(() => import('./pages/OnlineBilling'));
 const Users           = lazy(() => import('./pages/Users'));
 const UserActivityLog = lazy(() => import('./pages/UserActivityLog'));
 const Login           = lazy(() => import('./pages/Login'));
@@ -68,8 +66,6 @@ const AdminLayout = ({ sidebarOpen, setSidebarOpen }) => (
             <Route path="/pending"   element={<PageRoute page="pending"><PendingPayments /></PageRoute>} />
             <Route path="/customers" element={<PageRoute page="customers"><Customers /></PageRoute>} />
             <Route path="/categories" element={<PageRoute page="categories"><Categories /></PageRoute>} />
-            <Route path="/orders"     element={<PageRoute page="orders"><OnlineOrders /></PageRoute>} />
-            <Route path="/online-billing" element={<PageRoute page="online-billing"><OnlineBilling /></PageRoute>} />
             <Route path="/settings"  element={<PageRoute page="settings"><Settings /></PageRoute>} />
             <Route path="/users"     element={<PageRoute adminOnly><Users /></PageRoute>} />
             <Route path="/users/logs" element={<PageRoute adminOnly><UserActivityLog /></PageRoute>} />

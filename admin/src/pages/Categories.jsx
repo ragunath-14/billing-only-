@@ -15,11 +15,8 @@ const Categories = () => {
   const [formData, setFormData] = useState({ name: '', icon: '📦', description: '' });
   const [message, setMessage] = useState(null);
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
   const fetchCategories = async () => {
+    setLoading(true);
     try {
       const res = await axios.get(`${API_URLS.BASE}/categories`);
       setCategories(res.data);
@@ -29,6 +26,10 @@ const Categories = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,7 +55,7 @@ const Categories = () => {
     try {
       await axios.delete(`${API_URLS.BASE}/categories/${id}`);
       fetchCategories();
-    } catch (err) {
+    } catch {
       alert('Delete failed');
     }
   };

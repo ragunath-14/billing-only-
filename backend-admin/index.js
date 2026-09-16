@@ -13,7 +13,6 @@ const saleRoutes     = require('./routes/saleRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const settingRoutes  = require('./routes/settingRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const orderRoutes    = require('./routes/orderRoutes');
 const paymentRoutes  = require('./routes/paymentRoutes');
 const authRoutes     = require('./routes/authRoutes');
 const userRoutes     = require('./routes/userRoutes');
@@ -107,7 +106,6 @@ app.use('/api/sales',     saleRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/settings',  settingRoutes);
 app.use('/api/categories', categoryRoutes);
-app.use('/api/orders',     orderRoutes);
 app.use('/api/payments',   paymentRoutes);
 
 // ── Static Frontend Serving (PROD) ───────────────────────────────────────────

@@ -11,7 +11,9 @@ const ProductRow = ({ p, onEdit, onPrice, onOffer, onDelete, calcFinal, categori
           : <div className="bg-light d-flex align-items-center justify-content-center" style={{ width: 40, height: 40, borderRadius: 4, fontSize: '1.1rem' }}>{getCategoryIcon(p.category, categories)}</div>}
         <div>
           <div className="fw-600" style={{ fontWeight: 600 }}>{p.name}</div>
-          <div className="text-muted" style={{ fontSize: '0.7rem' }}>{p.barcode || 'No Barcode'}</div>
+          <div className="text-muted" style={{ fontSize: '0.7rem' }}>
+            {p.sku ? `Sl. No: ${p.sku}` : (p.barcode || 'No Barcode')}
+          </div>
         </div>
       </div>
     </td>

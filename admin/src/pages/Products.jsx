@@ -12,7 +12,7 @@ import { API_URLS } from '../api/config';
 import { useSettings } from '../context/SettingsContext';
 import { calcFinalPrice } from '../utils/pricing';
 
-const emptyForm = { name: '', brand: '', sku: '', category: 'Other', buyingPrice: '', sellingPrice: '', stock: '', lowStockThreshold: 5 };
+const emptyForm = { name: '', brand: '', sku: '', category: '', buyingPrice: '', sellingPrice: '', stock: '', lowStockThreshold: 5 };
 
 const Products = () => {
   const p = useProducts();
@@ -28,7 +28,7 @@ const Products = () => {
   const fs = React.useMemo(() => {
     const q = p.search.toLowerCase();
     return p.products.filter(i => {
-      const matchQ = i.name.toLowerCase().includes(q) || i.brand.toLowerCase().includes(q);
+      const matchQ = i.name.toLowerCase().includes(q) || i.brand.toLowerCase().includes(q) || (i.sku || '').toLowerCase().includes(q);
       const matchCat = p.filterCat === 'All' || i.category === p.filterCat;
       const sVal = Number(i.stock || 0);
       const thres = Number(i.lowStockThreshold || 5);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Store, CreditCard, Bell, CheckCircle2, Percent } from 'lucide-react';
 import ShopInformation from '../components/settings/ShopInformation';
 import BillingConfig from '../components/settings/BillingConfig';
@@ -19,7 +19,7 @@ const Settings = () => {
     if (e) e.preventDefault();
     setLoading(true);
     try {
-      const { _id, __v, createdAt, updatedAt, ...payload } = settings;
+      const { _id, __v, createdAt: _createdAt, updatedAt: _updatedAt, ...payload } = settings;
       await axios.post(API_URLS.SETTINGS, payload);
       setSaved(true); 
       refreshSettings();

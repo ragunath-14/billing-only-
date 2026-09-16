@@ -17,8 +17,7 @@ const saleSchema = new mongoose.Schema({
   gst: { type: Number },
   taxRate: { type: Number, default: 18 },
   billType: { type: String, default: 'GST' },
-  paymentMethod: { type: String, enum: ['Cash', 'UPI', 'Card', 'Credit'], default: 'Cash' },
-  onlineOrderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' }
+  paymentMethod: { type: String, enum: ['Cash', 'UPI', 'Card', 'Credit'], default: 'Cash' }
 }, { timestamps: true });
 
 // Optimized Performance Indexes

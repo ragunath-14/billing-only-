@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CheckoutActions = ({ billType, onType, method, onMethod, onCheckout, onQuick, loading, cartLen, pendingPayment, onPendingPaymentChange }) => (
+const CheckoutActions = ({ billType, onType, method, onMethod, onCheckout, onQuick, loading, pendingPayment, onPendingPaymentChange }) => (
   <div className="p-3 bg-light bg-opacity-25 rounded-bottom">
     <div className="d-flex gap-2 mb-3">
       <div className="flex-fill"><label className="fw-bold small text-muted mb-1 px-1">Bill Type</label>
@@ -43,10 +43,10 @@ const CheckoutActions = ({ billType, onType, method, onMethod, onCheckout, onQui
     </div>
 
     <div className="d-flex gap-2">
-      <button className="btn btn-outline-primary btn-lg flex-fill fw-bold py-3 shadow-xs border-dashed" onClick={onQuick} disabled={loading || cartLen === 0} style={{ borderStyle: 'dashed' }}>
+      <button type="button" className="btn btn-outline-primary btn-lg flex-fill fw-bold py-3 shadow-xs border-dashed" onClick={onQuick} disabled={loading} style={{ borderStyle: 'dashed' }}>
         QUICK ENTRY
       </button>
-      <button className="btn btn-primary btn-lg flex-grow-1 fw-bold py-3 shadow-sm" style={{ minWidth: '60%' }} onClick={onCheckout} disabled={loading || cartLen === 0}>
+      <button type="button" className="btn btn-primary btn-lg flex-grow-1 fw-bold py-3 shadow-sm" style={{ minWidth: '60%' }} onClick={onCheckout} disabled={loading}>
         {loading ? '...' : 'COMPLETE SALE'}
       </button>
     </div>
