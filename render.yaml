@@ -4,7 +4,9 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: cd backend-admin && npm ci && cd ../admin && npm ci && npm run build
+    # --include=dev on the frontend install: NODE_ENV=production (set below) makes
+    # npm ci skip devDependencies by default, but vite (needed to build) lives there.
+    buildCommand: cd backend-admin && npm ci && cd ../admin && npm ci --include=dev && npm run build
     startCommand: cd backend-admin && npm start
     healthCheckPath: /
     envVars:
