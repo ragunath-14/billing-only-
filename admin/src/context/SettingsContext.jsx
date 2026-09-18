@@ -14,6 +14,7 @@ export const SettingsProvider = ({ children }) => {
     gstin: '22AAAAA0000A1Z5',
     taxRate: 18,
     currency: 'INR',
+    printPaperSize: 'thermal',
     globalDiscount: { enabled: false, type: 'percentage', value: 0 }
   });
 

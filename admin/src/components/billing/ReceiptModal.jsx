@@ -4,6 +4,7 @@ import { useSettings } from '../../context/SettingsContext';
 const ReceiptModal = ({ show, sale, onClose, onDelete }) => {
   const { settings } = useSettings();
   if (!show || !sale) return null;
+  const isA4 = settings.printPaperSize === 'a4';
   const handlePrint = () => window.print();
 
   const handleVoid = () => {
@@ -13,11 +14,11 @@ const ReceiptModal = ({ show, sale, onClose, onDelete }) => {
   };
   
   return (<div className="modal show d-block no-print" style={{ background: 'rgba(0,0,0,0.6)' }}>
-    <div className="modal-dialog modal-dialog-centered"><div className="modal-content shadow-lg border-0">
+    <div className={`modal-dialog modal-dialog-centered ${isA4 ? 'modal-lg' : ''}`}><div className="modal-content shadow-lg border-0">
       <div className="modal-header border-0 pb-0"><button className="btn-close" onClick={onClose} /></div>
       <div className="modal-body pt-0 text-center">
         <div className="mb-4"><CheckCircle2 size={48} color="#16a34a" /><h5 className="fw-bold mt-2">Sale Completed!</h5><p className="text-muted small">The transaction has been recorded</p></div>
-        <div className="receipt-box border p-4 text-start bg-white shadow-sm" style={{ fontFamily: 'monospace', fontSize: '0.85rem', lineHeight: '1.4' }}>
+        <div className={`receipt-box border p-4 text-start bg-white shadow-sm ${isA4 ? 'print-a4' : ''}`} style={{ fontFamily: 'monospace', fontSize: '0.85rem', lineHeight: '1.4' }}>
           <div className="text-center mb-3">
             <div className="fw-bold h5 mb-0">✨ {settings.shopName || 'Shop Hub'}</div>
             <div style={{ fontSize: '0.72rem' }}>{settings.address || 'Loading...'}<br/>GSTIN: {settings.gstin || 'N/A'}</div>

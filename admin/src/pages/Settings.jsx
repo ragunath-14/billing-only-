@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Store, CreditCard, Bell, CheckCircle2, Percent } from 'lucide-react';
+import { Store, CreditCard, Bell, CheckCircle2, Percent, Printer } from 'lucide-react';
 import ShopInformation from '../components/settings/ShopInformation';
 import BillingConfig from '../components/settings/BillingConfig';
 import NotificationPrefs from '../components/settings/NotificationPrefs';
 import GlobalDiscount from '../components/settings/GlobalDiscount';
+import PrintSettings from '../components/settings/PrintSettings';
 
 import { useSettings } from '../context/SettingsContext';
 import axios from 'axios';
@@ -32,6 +33,7 @@ const Settings = () => {
     { id: 'shop', label: 'Shop Details', icon: <Store size={16} /> },
     { id: 'billing', label: 'Billing & GST', icon: <CreditCard size={16} /> },
     { id: 'discount', label: 'Global Discount', icon: <Percent size={16} /> },
+    { id: 'print', label: 'Print & Receipt', icon: <Printer size={16} /> },
     { id: 'notifications', label: 'Notifications', icon: <Bell size={16} /> },
   ];
 
@@ -60,6 +62,7 @@ const Settings = () => {
             {tab === 'shop' && <ShopInformation data={settings} onChange={setSettings} onSave={handleSave} loading={loading} />}
             {tab === 'billing' && <BillingConfig data={settings} onChange={setSettings} onSave={handleSave} loading={loading} />}
             {tab === 'discount' && <GlobalDiscount data={settings} onChange={setSettings} onSave={handleSave} loading={loading} />}
+            {tab === 'print' && <PrintSettings data={settings} onChange={setSettings} onSave={handleSave} loading={loading} />}
             {tab === 'notifications' && <NotificationPrefs data={settings} onChange={setSettings} />}
           </div>
         </div>

@@ -10,6 +10,7 @@ const settingSchema = new mongoose.Schema({
   taxRate: { type: Number, default: 18 },
   lowStockAlert: { type: Boolean, default: true },
   printHeader: { type: String, default: 'Thank You for Shopping!' },
+  printPaperSize: { type: String, enum: ['thermal', 'a4'], default: 'thermal' },
   globalDiscount: {
     enabled: { type: Boolean, default: false },
     type: { type: String, enum: ['percentage', 'flat'], default: 'percentage' },

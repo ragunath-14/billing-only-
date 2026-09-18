@@ -740,4 +740,16 @@ input[type=number] {
     border: none !important;
     box-shadow: none !important;
   }
+
+  /* A4 sheet bill layout */
+  .receipt-box.print-a4 {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 15mm !important;
+    font-size: 1rem !important;
+  }
+  .receipt-box.print-a4 .h5 { font-size: 1.6rem !important; }
+  .receipt-box.print-a4 [style*="font-size: 0.72rem"],
+  .receipt-box.print-a4 .extra-small { font-size: 0.85rem !important; }
+  .receipt-box.print-a4 table { font-size: 1rem !important; }
 }
