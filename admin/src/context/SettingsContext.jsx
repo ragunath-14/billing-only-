@@ -27,6 +27,10 @@ export const SettingsProvider = ({ children }) => {
 
   useEffect(() => { fetchSettings(); }, []);
 
+  useEffect(() => {
+    document.title = `${settings.shopName || 'Sparkle Hub'} — Admin`;
+  }, [settings.shopName]);
+
   return (
     <SettingsContext.Provider value={{ settings, setSettings, refreshSettings: fetchSettings }}>
       {children}
