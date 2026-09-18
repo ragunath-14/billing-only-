@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Bell, AlertTriangle, Package, X, ChevronRight, Menu } from 'lucide-react';
+import { Bell, AlertTriangle, Package, X, ChevronRight, Menu, Download } from 'lucide-react';
 import { API_URLS } from '../api/config';
 import { getUserInfo } from '../utils/auth';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 const titles = {
   '/':          'Dashboard',
@@ -101,6 +102,7 @@ const Topbar = ({ onMenuClick }) => {
   const title = titles[pathname] || 'Sparkle Hub';
   const user = getUserInfo();
   const username = user?.username || 'Account';
+  const { available: canInstall, install } = useInstallPrompt();
 
   return (
     <div className="topbar">
@@ -111,6 +113,15 @@ const Topbar = ({ onMenuClick }) => {
         <span className="topbar-title">{title}</span>
       </div>
       <div className="topbar-right">
+        {canInstall && (
+          <button
+            className="btn btn-primary btn-sm d-none d-sm-flex align-items-center gap-2"
+            onClick={install}
+            title="Install this app on your desktop"
+          >
+            <Download size={15} /> Install App
+          </button>
+        )}
         {/* Bell Notification Button */}
         <div style={{ position: 'relative' }}>
           <button
