@@ -1,7 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import axios from 'axios';
 import { useSettings } from '../context/SettingsContext';
-import { clearToken, hasPageAccess, isAdmin } from '../utils/auth';
+import { clearSession, hasPageAccess, isAdmin } from '../utils/auth';
+import { API_URLS } from '../api/config';
 import {
   LayoutDashboard, Package, ShoppingCart,
   Users, Clock, Settings, LogOut, LayoutGrid,
@@ -15,8 +17,9 @@ const Sidebar = ({ onLogoClick }) => {
   const navigate = useNavigate();
   const { settings } = useSettings();
 
-  const handleLogout = () => {
-    clearToken();
+  const handleLogout = async () => {
+    try { await axios.post(`${API_URLS.BASE}/auth/logout`); } catch { /* clear local state regardless */ }
+    clearSession();
     navigate('/login');
   };
 
@@ -35,6 +38,12 @@ const Sidebar = ({ onLogoClick }) => {
       title: 'Customer Management',
       items: [
         { to: '/customers', page: 'customers', icon: <Users size={17} />,          label: 'Customers' },
+      ]
+    },
+    {
+      title: 'Insights',
+      items: [
+        { to: '/reports', page: 'reports', icon: <BarChart3 size={17} />, label: 'Reports' },
       ]
     },
   ]

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Lock, User, LogIn, Sparkles, ArrowLeft, AlertCircle } from 'lucide-react';
 import { API_URLS } from '../api/config';
-import { setToken } from '../utils/auth';
+import { setSession } from '../utils/auth';
 import { useSettings } from '../context/SettingsContext';
 
 const Login = () => {
@@ -19,7 +19,8 @@ const Login = () => {
     setError('');
     try {
       const res = await axios.post(`${API_URLS.BASE}/auth/login`, creds);
-      setToken(res.data.token);
+      const { username, role, pages, exp } = res.data;
+      setSession({ username, role, pages, exp });
       // The one-time app-mount settings fetch runs before login and now requires
       // auth, so it fails silently — refetch now that we have a token.
       refreshSettings();

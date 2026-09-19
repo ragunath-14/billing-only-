@@ -1,13 +1,28 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-// Protects admin-only routes. Expects "Authorization: Bearer <token>".
-function requireAuth(req, res, next) {
+// Protects admin-only routes. Accepts the token either as a same-site httpOnly
+// cookie (the SPA's flow) or as "Authorization: Bearer <token>" (non-browser
+// API clients, e.g. the integration test suite).
+async function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  const headerToken = header.startsWith('Bearer ') ? header.slice(7) : null;
+  const token = headerToken || req.cookies?.admin_token || null;
   if (!token) return res.status(401).json({ error: 'Authentication required' });
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.role === 'staff') {
+      // Re-check against the DB on every request instead of trusting the pages/active
+      // state the token was minted with — otherwise deactivating a staff account or
+      // changing their page access doesn't take effect until their token expires (12h).
+      const user = await User.findById(decoded.uid).lean();
+      if (!user || !user.active) return res.status(401).json({ error: 'Invalid or expired token' });
+      decoded.pages = user.allowedPages;
+    }
+
+    req.user = decoded;
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired token' });

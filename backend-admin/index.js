@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
+const mongoSanitize = require('express-mongo-sanitize');
 
 // ── Route imports ──────────────────────────────────────────────────────────────
 // No shopRoutes here — this service is admin-only; the public storefront is
@@ -54,27 +56,45 @@ app.use(helmet({
     },
   },
   crossOriginResourcePolicy: { policy: 'same-site' },
+  // Explicit (rather than relying on helmet's default) so browsers cache the
+  // HTTPS-only instruction for a full year and apply it to subdomains too.
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
 }));
 
 // CORS: same-origin requests (the SPA served by this same app) always pass.
 // Cross-origin browser requests are only allowed from origins explicitly
 // listed in CORS_ORIGIN (comma-separated) or this service's own Render URL —
 // everything else is rejected so a page on another site can't call the API
-// on a logged-in admin's behalf. Wide open in development for convenience.
+// on a logged-in admin's behalf. In development, any localhost/127.0.0.1 port
+// is allowed too (e.g. the Vite dev server) — but never an arbitrary origin,
+// since that's now paired with `credentials: true` below: reflecting *any*
+// origin while allowing credentials would let any website read authenticated
+// responses via a credentialed fetch against a locally-running dev backend.
 const isProd = process.env.NODE_ENV === 'production';
 const allowedOrigins = [process.env.RENDER_EXTERNAL_URL, ...(process.env.CORS_ORIGIN || '').split(',')]
   .map(s => s && s.trim())
   .filter(Boolean);
+const isLocalDevOrigin = (origin) => !isProd && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
 app.use(cors({
   origin(origin, callback) {
-    if (!isProd || !origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin) || isLocalDevOrigin(origin)) return callback(null, true);
     callback(new Error('Not allowed by CORS'));
   },
+  // Required so the browser will actually send/accept the httpOnly auth cookie
+  // on cross-origin requests (e.g. the Vite dev server talking to this API).
+  credentials: true,
 }));
+
+app.use(cookieParser());
 
 // 4mb headroom for product photos, which arrive as base64 data URIs
 // (client-side compressed to ~900px/JPEG q0.8, but base64 adds ~33% overhead).
 app.use(express.json({ limit: '4mb' }));
+
+// Strips any request key starting with "$" or containing "." from body/params/query,
+// so a crafted payload like { "username": { "$ne": null } } can't be used to bypass
+// a Mongo query's intended match.
+app.use(mongoSanitize());
 
 // General abuse/scraping brake across the whole API — generous enough for normal
 // UI usage (dashboard pages fire several requests at once) while capping how much

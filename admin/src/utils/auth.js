@@ -1,35 +1,35 @@
 import { PAGE_DEFS } from '../constants/pages';
 
-const TOKEN_KEY = 'authToken';
+const SESSION_KEY = 'adminSession';
 
-export const getToken = () => localStorage.getItem(TOKEN_KEY);
-export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
-export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
+// The actual bearer token now lives only in an httpOnly cookie the browser
+// manages — JS never touches it, closing off the XSS/localStorage exfiltration
+// path a raw JWT sitting here used to have. This stores only non-secret session
+// metadata (who's logged in, their role/pages, when it expires) so the UI can
+// render synchronously without an extra round trip on every page load. It is
+// purely a UX hint — the server (via the cookie) remains the actual auth gate;
+// a stale or tampered value here just gets a 401 on the next API call.
+export const setSession = (session) => localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+export const clearSession = () => localStorage.removeItem(SESSION_KEY);
 
-// Decodes the JWT payload locally to check expiry without a network round-trip.
-// The server is still the source of truth — any stale/tampered token is rejected
-// by requireAuth on the next API call and the response interceptor logs it out.
-function decodeToken(token) {
+function getSession() {
   try {
-    return JSON.parse(atob(token.split('.')[1]));
+    return JSON.parse(localStorage.getItem(SESSION_KEY));
   } catch {
     return null;
   }
 }
 
 export function isLoggedIn() {
-  const token = getToken();
-  if (!token) return false;
-  const payload = decodeToken(token);
-  return !!payload && typeof payload.exp === 'number' && payload.exp * 1000 > Date.now();
+  const session = getSession();
+  return !!session && typeof session.exp === 'number' && session.exp * 1000 > Date.now();
 }
 
-// Decodes the current token into { sub, role, pages } (role/pages absent on expired/missing tokens).
+// Returns { username, role, pages } (absent on expired/missing sessions).
 export function getUserInfo() {
   if (!isLoggedIn()) return null;
-  const payload = decodeToken(getToken());
-  if (!payload) return null;
-  return { username: payload.sub, role: payload.role, pages: payload.pages || [] };
+  const session = getSession();
+  return { username: session.username, role: session.role, pages: session.pages || [] };
 }
 
 export const isAdmin = () => getUserInfo()?.role === 'admin';
