@@ -8,11 +8,11 @@ import {
   ArrowUpRight, ShoppingCart, Users, TrendingUp,
   FileSpreadsheet, FileIcon as FilePdf, ChevronDown, User, Search, Trash2, Eye
 } from 'lucide-react';
-import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { API_URLS } from '../api/config';
 import Pagination from '../components/common/Pagination';
+import { exportToExcel } from '../utils/exportExcel';
 
 const Reports = () => {
   const [sales, setSales] = useState([]);
@@ -106,7 +106,7 @@ const Reports = () => {
       .slice(0, 5);
   }, [filteredSales]);
 
-  const exportToExcel = () => {
+  const handleExportExcel = () => {
     const data = filteredSales.map(s => ({
       'Invoice #': s._id.slice(-6).toUpperCase(),
       'Date': new Date(s.createdAt).toLocaleDateString(),
@@ -119,10 +119,7 @@ const Reports = () => {
       'Total': s.totalAmount || 0,
       'Method': s.paymentMethod
     }));
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
-    XLSX.writeFile(wb, `Sales_Report_${fromDate}_to_${toDate}.xlsx`);
+    exportToExcel(`Sales_Report_${fromDate}_to_${toDate}.xlsx`, 'Sales Report', data);
   };
 
   const exportToPDF = () => {
@@ -222,7 +219,7 @@ const Reports = () => {
               <button className="btn btn-danger btn-sm flex-grow-1 d-flex align-items-center justify-content-center gap-2 rounded-3 py-2" onClick={exportToPDF}>
                 <FilePdf size={16} /> PDF
               </button>
-              <button className="btn btn-success btn-sm flex-grow-1 d-flex align-items-center justify-content-center gap-2 rounded-3 py-2" onClick={exportToExcel}>
+              <button className="btn btn-success btn-sm flex-grow-1 d-flex align-items-center justify-content-center gap-2 rounded-3 py-2" onClick={handleExportExcel}>
                 <FileSpreadsheet size={16} /> Excel
               </button>
             </div>

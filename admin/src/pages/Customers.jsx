@@ -53,7 +53,7 @@ const Customers = () => {
   };
 
   return (<div className="container-fluid p-0">
-    <CustomerHeader onAdd={() => { setEditIdx(null); setForm({ name: '', mobile: '' }); setShowModal(true); }} />
+    <CustomerHeader onAdd={() => { setEditIdx(null); setForm({ name: '', mobile: '' }); setShowModal(true); }} customers={customers} sales={sales} />
     <div className="table-card mt-4 shadow-sm border-0">
       <CustomerTable list={paged} q={q} onQ={setQ} onAdd={() => setShowModal(true)} onEdit={handleEdit} onDelete={handleDelete} 
         onHistory={(c) => { setSelectedCust(c); setShowHistory(true); }} allCustomers={customers} />

@@ -7,5 +7,6 @@ export const PAGE_DEFS = [
   { key: 'categories',     label: 'Categories',       path: '/categories' },
   { key: 'pending',        label: 'Pending Payments', path: '/pending' },
   { key: 'customers',      label: 'Customers',        path: '/customers' },
+  { key: 'reports',        label: 'Reports',          path: '/reports' },
   { key: 'settings',       label: 'System Settings',  path: '/settings' },
 ];

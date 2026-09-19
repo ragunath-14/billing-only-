@@ -7,6 +7,7 @@ const PAGE_KEYS = [
   'categories',
   'pending',
   'customers',
+  'reports',
   'settings',
 ];
 
